@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Editor — Paper Progress Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <h1>Add / edit a paper</h1>
+      <nav class="site-nav">
+        <a href="index.html">← Back to dashboard</a>
+      </nav>
+    </header>
+
+    <p class="hint intro">
+      This site is a static page with no server, so this editor cannot write to your GitHub
+      repository directly. Build the record here, download the JSON file it produces, then
+      commit it to <code>data/papers/</code> and list its id in <code>data/papers/index.json</code>
+      (or use the "download updated index" button below).
+    </p>
+
+    <div class="toolbar">
+      <label class="inline-label">
+        Load existing:
+        <select id="load-select"><option value="">— choose —</option></select>
+      </label>
+      <button id="load-template-btn">Start from template</button>
+      <button id="import-btn">Import JSON file…</button>
+      <input type="file" id="import-file" accept="application/json" class="hidden" />
+    </div>
+
+    <div class="editor-grid">
+      <div>
+        <form id="paper-form" autocomplete="off">
+          <fieldset>
+            <legend>Paper</legend>
+            <label for="f-id">Id (used as filename, lowercase-with-hyphens)</label>
+            <input type="text" id="f-id" pattern="[a-z0-9][a-z0-9-]*" required />
+
+            <label for="f-title">Title</label>
+            <input type="text" id="f-title" required />
+
+            <label for="f-authors">Authors (comma-separated)</label>
+            <input type="text" id="f-authors" placeholder="Jane Doe, John Smith" />
+
+            <label for="f-venue">Venue</label>
+            <input type="text" id="f-venue" placeholder="Journal / conference name" />
+
+            <label for="f-status">Status</label>
+            <select id="f-status">
+              <option value="planning">Planning</option>
+              <option value="in_progress">In progress</option>
+              <option value="submitted">Submitted</option>
+              <option value="under_review">Under review</option>
+              <option value="revision">Revision</option>
+              <option value="accepted">Accepted</option>
+              <option value="rejected">Rejected</option>
+              <option value="published">Published</option>
+            </select>
+
+            <div class="row">
+              <div>
+                <label for="f-start">Timeline start</label>
+                <input type="date" id="f-start" required />
+              </div>
+              <div>
+                <label for="f-end">Timeline end</label>
+                <input type="date" id="f-end" required />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Milestones (deadlines &amp; events)</legend>
+            <div id="milestones-list"></div>
+            <button type="button" class="add-row-btn" id="add-milestone">+ Add milestone</button>
+          </fieldset>
+
+          <fieldset>
+            <legend>Slots (time ranges / bars)</legend>
+            <div id="slots-list"></div>
+            <button type="button" class="add-row-btn" id="add-slot">+ Add slot</button>
+          </fieldset>
+
+          <fieldset>
+            <legend>Events (log entries)</legend>
+            <div id="events-list"></div>
+            <button type="button" class="add-row-btn" id="add-event">+ Add event</button>
+          </fieldset>
+
+          <fieldset>
+            <legend>Processes (currently running)</legend>
+            <div id="processes-list"></div>
+            <button type="button" class="add-row-btn" id="add-process">+ Add process</button>
+          </fieldset>
+        </form>
+
+        <div class="toolbar">
+          <button id="validate-btn" class="primary">Validate</button>
+          <button id="download-btn">Download paper JSON</button>
+          <button id="download-index-btn">Download updated index.json</button>
+          <button id="copy-btn" class="ghost">Copy JSON</button>
+        </div>
+        <div id="validation-output"></div>
+      </div>
+
+      <div class="preview-panel">
+        <h3 class="section-label">Live preview</h3>
+        <div class="paper-card" id="preview-card">
+          <p class="empty-note">Fill in the form to see a preview.</p>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      Fields map 1:1 to <code>data/schema/paper.schema.json</code>. See <code>data/template.json</code> for a plain-text starting point.
+    </footer>
+  </div>
+
+  <script type="module" src="js/editor.js"></script>
+</body>
+</html>

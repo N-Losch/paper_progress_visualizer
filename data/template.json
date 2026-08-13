@@ -1,0 +1,35 @@
+{
+  "id": "my-paper-id",
+  "title": "Working title of the paper",
+  "authors": ["Your Name"],
+  "venue": "Target journal or conference",
+  "status": "planning",
+  "createdAt": "2027-01-01",
+  "updatedAt": "2027-01-01",
+  "timeline": {
+    "start": "2027-01-01",
+    "end": "2027-03-01"
+  },
+  "milestones": [
+    {
+      "id": "m1",
+      "label": "Example deadline",
+      "date": "2027-01-15",
+      "type": "deadline",
+      "status": "pending",
+      "note": "Optional free-text note."
+    }
+  ],
+  "slots": [
+    {
+      "id": "s1",
+      "label": "Example time slot",
+      "start": "2027-01-05",
+      "end": "2027-01-15",
+      "status": "upcoming",
+      "note": "Optional free-text note."
+    }
+  ],
+  "events": [],
+  "processes": []
+}

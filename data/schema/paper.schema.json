@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.org/paper-progress-dashboard/paper.schema.json",
+  "title": "Paper progress record",
+  "description": "One JSON file describes the full submission timeline for a single paper.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title", "authors", "status", "timeline", "milestones"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable identifier. Must match the filename (without .json).",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "title": { "type": "string", "minLength": 1 },
+    "authors": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "venue": {
+      "type": "string",
+      "description": "Journal or conference this paper is being submitted to."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "in_progress",
+        "submitted",
+        "under_review",
+        "revision",
+        "accepted",
+        "rejected",
+        "published"
+      ]
+    },
+    "createdAt": { "type": "string", "format": "date" },
+    "updatedAt": { "type": "string", "format": "date" },
+    "timeline": {
+      "type": "object",
+      "description": "Bounds of the visible axis. Should comfortably cover all milestones/slots.",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": { "type": "string", "format": "date" },
+        "end": { "type": "string", "format": "date" }
+      }
+    },
+    "milestones": {
+      "type": "array",
+      "description": "Point-in-time deadlines or events plotted as ticks on the axis.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "date", "type"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
+          "date": { "type": "string", "format": "date" },
+          "type": { "type": "string", "enum": ["deadline", "event"] },
+          "status": {
+            "type": "string",
+            "description": "Optional override. If omitted, computed from date vs. today (deadline: pending -> overdue once past; event: always 'done').",
+            "enum": ["pending", "done", "overdue"]
+          },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "slots": {
+      "type": "array",
+      "description": "Time ranges shown as bars, e.g. a review window or writing period.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "start", "end"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
+          "start": { "type": "string", "format": "date" },
+          "end": { "type": "string", "format": "date" },
+          "status": {
+            "type": "string",
+            "description": "Optional override. If omitted, computed from today vs. start/end.",
+            "enum": ["upcoming", "active", "done", "cancelled"]
+          },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "description": "A free-form log of things that actually happened (a lab notebook entry), separate from planned milestones.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "date"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
+          "date": { "type": "string", "format": "date" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "processes": {
+      "type": "array",
+      "description": "Things currently in flight that don't have a fixed end date, e.g. 'waiting on coauthor feedback'.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "active"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
+          "active": { "type": "boolean" },
+          "since": { "type": "string", "format": "date" },
+          "note": { "type": "string" }
+        }
+      }
+    }
+  }
+}

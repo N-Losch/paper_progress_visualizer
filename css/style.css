@@ -1,0 +1,421 @@
+/* ---------------------------------------------------------------------
+   Design tokens
+   Direction: a researcher's ruled notebook page rendered in ballpoint
+   ink-blue -- a direct nod to the hand-drawn timeline sketch this project
+   is based on. Graph-paper backdrop, squared-off marks, monospace dates.
+------------------------------------------------------------------------ */
+:root {
+  --paper: #f7f8fb;
+  --paper-card: #ffffff;
+  --grid-line: #e3e7f0;
+  --ink: #1b2440;
+  --ink-soft: #4a5578;
+  --accent: #2b4fd6;
+  --accent-soft: #dde4fb;
+
+  --done: #1f9d74;
+  --done-soft: #e0f5ed;
+  --active: #e08a2c;
+  --active-soft: #fbecd9;
+  --upcoming: #9aa3b2;
+  --upcoming-soft: #eceef2;
+  --overdue: #d6455a;
+  --overdue-soft: #fbe0e4;
+  --pending: #9aa3b2;
+  --cancelled: #c3c8d1;
+
+  --radius: 3px;
+  --font-display: 'Space Grotesk', 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 100% 28px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 28px 100%,
+    var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+a { color: var(--accent); }
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+/* ---------------------------------------------------------------------
+   Header
+------------------------------------------------------------------------ */
+.site-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 14px;
+  margin-bottom: 28px;
+}
+
+.site-header h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 28px;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.site-header .today-tag {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink-soft);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  padding: 4px 10px;
+  border-radius: var(--radius);
+}
+
+.site-nav a {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-decoration: none;
+  color: var(--ink-soft);
+  margin-left: 14px;
+  border-bottom: 1px dashed var(--ink-soft);
+}
+.site-nav a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---------------------------------------------------------------------
+   Paper cards
+------------------------------------------------------------------------ */
+.paper-card {
+  background: var(--paper-card);
+  border: 1px solid var(--grid-line);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 20px 22px 12px;
+  margin-bottom: 26px;
+  box-shadow: 0 1px 2px rgba(27, 36, 64, 0.04);
+}
+
+.paper-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.paper-card h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  margin: 0 0 4px;
+}
+
+.paper-meta {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.status-pill {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--ink-soft);
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------
+   SVG timeline
+------------------------------------------------------------------------ */
+.timeline-svg {
+  width: 100%;
+  height: auto;
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  text-rendering: optimizeLegibility;
+}
+
+.axis { stroke: var(--ink); stroke-width: 1.5; }
+.tick { stroke: var(--ink-soft); stroke-width: 1; }
+.tick-label { font-size: 10px; fill: var(--ink-soft); }
+
+.today-line { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.today-label { font-size: 11px; fill: var(--accent); font-weight: 600; }
+
+.marker { stroke: var(--paper-card); stroke-width: 1.5; }
+.leader { stroke: var(--grid-line); stroke-width: 1; }
+.milestone-label { font-size: 11px; fill: var(--ink); font-family: var(--font-mono); }
+.milestone-date { font-size: 9px; fill: var(--ink-soft); }
+
+.bracket { fill: none; stroke-width: 1.75; }
+.bracket-fill { rx: 2; opacity: 0.9; }
+.slot-label { font-size: 11px; fill: var(--ink); font-family: var(--font-body); }
+
+.status-done, .marker.status-done { fill: var(--done); stroke: var(--done); }
+.status-active, .marker.status-active { fill: var(--active); stroke: var(--active); }
+.status-upcoming, .marker.status-upcoming, .status-pending, .marker.status-pending { fill: var(--upcoming); stroke: var(--upcoming); }
+.status-overdue, .marker.status-overdue { fill: var(--overdue); stroke: var(--overdue); }
+.status-cancelled, .marker.status-cancelled { fill: var(--cancelled); stroke: var(--cancelled); }
+
+text.status-done { fill: var(--done); }
+text.status-active { fill: var(--active); }
+text.status-upcoming, text.status-pending { fill: var(--ink); }
+text.status-overdue { fill: var(--overdue); font-weight: 600; }
+
+/* ---------------------------------------------------------------------
+   Legend
+------------------------------------------------------------------------ */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 24px;
+  font-family: var(--font-mono);
+}
+.legend .swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+  border-radius: 2px;
+  vertical-align: -1px;
+}
+
+/* ---------------------------------------------------------------------
+   Processes & events
+------------------------------------------------------------------------ */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--grid-line);
+}
+@media (max-width: 640px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+
+.two-col h3,
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  margin: 0 0 8px;
+}
+
+.process-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  padding: 5px 0;
+}
+.process-item .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--active);
+  flex: none;
+  animation: pulse 2.2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.process-item .since { color: var(--ink-soft); font-family: var(--font-mono); font-size: 11px; }
+
+.event-item {
+  font-size: 13px;
+  padding: 5px 0;
+  border-bottom: 1px dotted var(--grid-line);
+}
+.event-item .event-date {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-right: 8px;
+}
+
+.empty-note { color: var(--upcoming); font-size: 13px; font-style: italic; }
+
+/* ---------------------------------------------------------------------
+   Shared controls
+   Used on both pages: the dashboard's "Viewing" paper switcher and every
+   button row in the editor.
+------------------------------------------------------------------------ */
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border-radius: var(--radius);
+  border: 1px solid var(--ink);
+  background: var(--paper-card);
+  color: var(--ink);
+  padding: 6px 12px;
+  font-size: 13px;
+}
+button:hover { background: var(--accent-soft); border-color: var(--accent); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.primary:hover { filter: brightness(1.08); }
+button.danger { border-color: var(--overdue); color: var(--overdue); background: var(--paper-card); }
+button.danger:hover { background: var(--overdue-soft); }
+button.ghost { border-color: transparent; background: transparent; color: var(--ink-soft); }
+
+select {
+  font: inherit;
+  font-family: var(--font-body);
+  padding: 7px 9px;
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+}
+select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* Editor form fields stack full-width; the dashboard's #paper-select
+   (outside this form) intentionally keeps its natural, content-sized width. */
+#paper-form select { width: 100%; }
+
+/* A label wrapping an inline control, e.g. "Viewing: [select]" or
+   "Load existing: [select]" -- used on both pages. */
+.inline-label {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Hidden until dashboard.js finds at least one paper to populate it with;
+   toggled via element.style.display, which overrides this default. */
+#paper-switcher { display: none; }
+
+/* ---------------------------------------------------------------------
+   Editor
+------------------------------------------------------------------------ */
+.editor-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .editor-grid { grid-template-columns: 1fr; }
+}
+
+fieldset {
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius);
+  background: var(--paper-card);
+  padding: 14px 16px 16px;
+  margin: 0 0 16px;
+}
+legend {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  padding: 0 6px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 10px 0 3px;
+}
+input[type="text"], input[type="date"], textarea {
+  width: 100%;
+  font: inherit;
+  font-family: var(--font-body);
+  padding: 7px 9px;
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+}
+input:focus, textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+textarea { resize: vertical; min-height: 44px; }
+
+.repeat-item {
+  border: 1px dashed var(--grid-line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  position: relative;
+  background: var(--paper);
+}
+.repeat-item .remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+/* A two-column grid pairing related fields (e.g. label/date, start/end).
+   Used both inside .repeat-item cards and directly in a fieldset. */
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.add-row-btn { width: 100%; margin-top: 4px; border-style: dashed; }
+
+.preview-panel {
+  position: sticky;
+  top: 20px;
+}
+
+.validation-box {
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  margin: 12px 0;
+}
+.validation-box.ok { background: var(--done-soft); color: #14684d; border: 1px solid var(--done); }
+.validation-box.error { background: var(--overdue-soft); color: #8f2233; border: 1px solid var(--overdue); }
+.validation-box ul { margin: 6px 0 0; padding-left: 18px; }
+
+.hint {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 4px 0 0;
+}
+.hint.intro { margin-bottom: 18px; }
+
+.hidden { display: none; }
+
+footer.site-footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--grid-line);
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+}

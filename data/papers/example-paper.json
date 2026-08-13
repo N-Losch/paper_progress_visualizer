@@ -1,0 +1,91 @@
+{
+  "id": "example-paper",
+  "title": "Example Paper: A Study of Deadlines",
+  "authors": ["Jane Doe", "John Smith"],
+  "venue": "Journal of Examples",
+  "status": "in_progress",
+  "createdAt": "2026-07-01",
+  "updatedAt": "2026-08-05",
+  "timeline": {
+    "start": "2026-07-01",
+    "end": "2026-10-15"
+  },
+  "milestones": [
+    {
+      "id": "m1",
+      "label": "Contact deadline",
+      "date": "2026-07-15",
+      "type": "deadline",
+      "status": "done",
+      "note": "Notified target venue of intent to submit."
+    },
+    {
+      "id": "m2",
+      "label": "Coauthors feedback due",
+      "date": "2026-08-01",
+      "type": "deadline",
+      "note": "Left as 'pending' on purpose: since the date is in the past, it renders as overdue."
+    },
+    {
+      "id": "m3",
+      "label": "Internal review",
+      "date": "2026-08-20",
+      "type": "event"
+    },
+    {
+      "id": "m4",
+      "label": "Journal submission deadline",
+      "date": "2026-10-15",
+      "type": "deadline"
+    }
+  ],
+  "slots": [
+    {
+      "id": "s1",
+      "label": "Feedback time",
+      "start": "2026-07-15",
+      "end": "2026-08-05",
+      "note": "Coauthors read and commented on the draft."
+    },
+    {
+      "id": "s2",
+      "label": "Writing sprint",
+      "start": "2026-08-05",
+      "end": "2026-09-10"
+    },
+    {
+      "id": "s3",
+      "label": "Final polish",
+      "start": "2026-09-10",
+      "end": "2026-10-14"
+    }
+  ],
+  "events": [
+    {
+      "id": "e1",
+      "label": "Submitted draft v1 to coauthors",
+      "date": "2026-07-14"
+    },
+    {
+      "id": "e2",
+      "label": "Received first round of comments",
+      "date": "2026-08-01",
+      "note": "Two of three coauthors replied."
+    }
+  ],
+  "processes": [
+    {
+      "id": "p1",
+      "label": "Waiting on coauthor feedback",
+      "active": true,
+      "since": "2026-08-01"
+    },
+    {
+      "id": "p2",
+      "label": "Running additional experiments",
+      "active": true,
+      "since": "2026-07-20",
+      "note": "Ablation study for reviewer robustness."
+    }
+  ]
+}

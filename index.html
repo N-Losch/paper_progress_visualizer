@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Paper Progress Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <h1>Paper Progress Dashboard</h1>
+      <nav class="site-nav">
+        <a href="editor.html">+ Add / edit a paper</a>
+      </nav>
+    </header>
+
+    <div class="toolbar" id="paper-switcher">
+      <label class="inline-label">
+        Viewing:
+        <select id="paper-select"><option value="">All papers</option></select>
+      </label>
+    </div>
+
+    <div class="legend" id="legend"></div>
+
+    <main id="papers">
+      <p class="empty-note">Loading…</p>
+    </main>
+
+    <footer class="site-footer">
+      Data lives in <code>data/papers/*.json</code>. Rendered client-side, no build step, no server.
+    </footer>
+  </div>
+
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
