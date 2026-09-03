@@ -1,7 +1,9 @@
 {
   "id": "mie2027-full-paper",
   "title": "MIE 2027 Full Paper Submission Timeline",
-  "authors": [],
+  "authors": [
+  "N"
+  ],
   "venue": "Medical Informatics Europe (MIE) 2027",
   "status": "in_progress",
   "createdAt": "2026-09-03",
