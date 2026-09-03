@@ -1,0 +1,108 @@
+{
+  "id": "mie2027-full-paper",
+  "title": "MIE 2027 Full Paper Submission Timeline",
+  "authors": [],
+  "venue": "Medical Informatics Europe (MIE) 2027",
+  "status": "in_progress",
+  "createdAt": "2026-09-03",
+  "updatedAt": "2026-09-03",
+  "timeline": {
+    "start": "2026-08-28",
+    "end": "2027-04-30"
+  },
+  "milestones": [
+    {
+      "id": "m1",
+      "label": "Call for Papers opens",
+      "date": "2026-08-28",
+      "type": "event",
+      "status": "done"
+    },
+    {
+      "id": "m2",
+      "label": "Full paper submission deadline",
+      "date": "2026-10-20",
+      "type": "deadline",
+      "note": "Full papers are limited to 5 pages."
+    },
+    {
+      "id": "m3",
+      "label": "Initial decisions",
+      "date": "2026-12-20",
+      "type": "event"
+    },
+    {
+      "id": "m4",
+      "label": "Re-submission deadline",
+      "date": "2027-01-21",
+      "type": "deadline",
+      "note": "Applies to papers invited to re-submit after the initial decision."
+    },
+    {
+      "id": "m5",
+      "label": "Final acceptance notifications",
+      "date": "2027-01-31",
+      "type": "event"
+    },
+    {
+      "id": "m6",
+      "label": "Mandatory author registration",
+      "date": "2027-02-24",
+      "type": "deadline",
+      "note": "At least one author of each accepted full paper must be fully registered; each accepted submission requires a separate registration."
+    },
+    {
+      "id": "m7",
+      "label": "Early-bird registration ends",
+      "date": "2027-03-01",
+      "type": "deadline"
+    },
+    {
+      "id": "m8",
+      "label": "MIE 2027 conference",
+      "date": "2027-04-26",
+      "type": "event",
+      "note": "Conference runs 26–30 April 2027 in Tallinn, Estonia."
+    }
+  ],
+  "slots": [
+    {
+      "id": "s1",
+      "label": "Paper preparation",
+      "start": "2026-08-28",
+      "end": "2026-10-19",
+      "note": "Prepare the 5-page full paper in English according to the IOS Press formatting guidelines."
+    },
+    {
+      "id": "s2",
+      "label": "Review and revision after initial decision",
+      "start": "2026-12-20",
+      "end": "2027-01-20",
+      "note": "Use this period for revisions if the initial decision invites re-submission."
+    },
+    {
+      "id": "s3",
+      "label": "Acceptance and registration",
+      "start": "2027-01-31",
+      "end": "2027-02-24",
+      "note": "Complete mandatory author registration by 24 February 2027 if accepted."
+    },
+    {
+      "id": "s4",
+      "label": "Conference preparation",
+      "start": "2027-02-25",
+      "end": "2027-04-25",
+      "note": "Prepare the oral presentation. Full-paper presentations are scheduled for approximately 8 minutes plus 2 minutes for questions."
+    }
+  ],
+  "events": [],
+  "processes": [
+    {
+      "id": "p1",
+      "label": "Preparing full paper submission",
+      "active": true,
+      "since": "2026-08-28",
+      "note": "Full papers are original research contributions for publication in the indexed conference proceedings."
+    }
+  ]
+}
