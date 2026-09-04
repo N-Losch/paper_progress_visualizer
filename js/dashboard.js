@@ -130,7 +130,7 @@ function renderInvalidCard(filename, errors) {
   card.style.borderLeftColor = 'var(--overdue)';
   card.appendChild(el('h2', {}, [document.createTextNode(`${filename}.json failed validation`)]));
 
-  const box = el('div', { class: 'validation-box error' });
+  const box = el('div', { class: 'validation-box error quiet' });
   const list = document.createElement('ul');
   errors.forEach((message) => {
     const li = document.createElement('li');

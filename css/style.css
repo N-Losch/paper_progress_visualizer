@@ -24,10 +24,10 @@
   --pending: #9aa3b2;
   --cancelled: #c3c8d1;
 
-  --radius: 3px;
-  --font-display: 'Space Grotesk', 'IBM Plex Sans', system-ui, sans-serif;
+  --radius: 8px;
+  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
-  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -69,10 +69,10 @@ a { color: var(--accent); }
 
 .site-header h1 {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 28px;
   margin: 0;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 
 .site-header .today-tag {
@@ -86,7 +86,8 @@ a { color: var(--accent); }
 }
 
 .site-nav a {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
+  font-weight: 500;
   font-size: 13px;
   text-decoration: none;
   color: var(--ink-soft);
@@ -103,9 +104,9 @@ a { color: var(--accent); }
   border: 1px solid var(--grid-line);
   border-left: 4px solid var(--accent);
   border-radius: var(--radius);
-  padding: 20px 22px 12px;
+  padding: 22px 24px 14px;
   margin-bottom: 26px;
-  box-shadow: 0 1px 2px rgba(27, 36, 64, 0.04);
+  box-shadow: 0 1px 2px rgba(27, 36, 64, 0.04), 0 10px 24px rgba(27, 36, 64, 0.05);
 }
 
 .paper-card-header {
@@ -160,8 +161,8 @@ a { color: var(--accent); }
 
 .marker { stroke: var(--paper-card); stroke-width: 1.5; }
 .leader { stroke: var(--grid-line); stroke-width: 1; }
-.milestone-label { font-size: 11px; fill: var(--ink); font-family: var(--font-mono); }
-.milestone-date { font-size: 9px; fill: var(--ink-soft); }
+.milestone-label { font-size: 11px; font-weight: 500; fill: var(--ink); font-family: var(--font-body); }
+.milestone-date { font-size: 9px; fill: var(--ink-soft); font-family: var(--font-mono); }
 
 .bracket { fill: none; stroke-width: 1.75; }
 .bracket-fill { rx: 2; opacity: 0.9; }
@@ -186,9 +187,10 @@ text.status-overdue { fill: var(--overdue); font-weight: 600; }
   flex-wrap: wrap;
   gap: 16px;
   font-size: 12px;
+  font-weight: 500;
   color: var(--ink-soft);
   margin-bottom: 24px;
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
 }
 .legend .swatch {
   display: inline-block;
@@ -216,7 +218,8 @@ text.status-overdue { fill: var(--overdue); font-weight: 600; }
 
 .two-col h3,
 .section-label {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
+  font-weight: 600;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -334,7 +337,8 @@ fieldset {
   margin: 0 0 16px;
 }
 legend {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
+  font-weight: 600;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -402,6 +406,15 @@ textarea { resize: vertical; min-height: 44px; }
 .validation-box.error { background: var(--overdue-soft); color: #8f2233; border: 1px solid var(--overdue); }
 .validation-box ul { margin: 6px 0 0; padding-left: 18px; }
 
+/* Same feedback, lighter footprint -- used for the dashboard's "this file
+   failed validation" card, where a solid red block would out-weigh every
+   other card on the page for what's just a one-line data problem. */
+.validation-box.quiet {
+  background: var(--paper);
+  color: var(--overdue);
+  border: 1px solid var(--overdue-soft);
+}
+
 .hint {
   font-size: 12px;
   color: var(--ink-soft);
@@ -417,5 +430,6 @@ footer.site-footer {
   border-top: 1px dashed var(--grid-line);
   font-size: 12px;
   color: var(--ink-soft);
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
 }
+footer.site-footer code { font-family: var(--font-mono); }

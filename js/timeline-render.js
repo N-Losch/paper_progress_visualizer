@@ -16,22 +16,24 @@ import { parseDate, todayUTC, daysBetween, fractionForDate, summarizePaper, form
 // numbers.
 // ---------------------------------------------------------------------
 const WIDTH = 1000;
-const AXIS_Y = 150;
+const AXIS_Y_MIN = 90; // shortest the chart top margin ever gets, for timelines with few milestones
 const MARGIN_X = 40;
 
 const MARKER_RADIUS = 7; // half-width of a milestone diamond/circle
 
-// Milestone labels stagger between two heights above the axis (by even/odd
-// index) so two nearby dates don't collide; within each height, later
-// entries at the same parity step further up so a run of same-side
-// milestones doesn't overlap either.
-const MILESTONE_LABEL_NEAR_OFFSET = 18; // "below" row's distance above the axis
-const MILESTONE_LABEL_FAR_OFFSET = 46; // "above" row's distance above the axis
-const MILESTONE_LABEL_STEP = 30; // extra vertical step per stacked pair
-const MILESTONE_DATE_LABEL_GAP = 14; // gap between the label and its date line above it
+// Milestone labels stack in rows above the axis, assigned by actual
+// horizontal collision (see assignMilestoneRows) rather than a fixed
+// even/odd alternation -- a cluster of milestones close together in date
+// needs more rows than one spread evenly across the timeline.
+const MILESTONE_LABEL_BASE_OFFSET = 18; // row 0's distance above the axis
+const MILESTONE_LABEL_ROW_GAP = 28; // vertical step between stacked rows
+const MILESTONE_DATE_LABEL_GAP = 13; // gap between a label and its date line above it
+const MILESTONE_TOP_PADDING = 30; // clearance above the topmost label row (also keeps it clear of the "today" tag)
+const MILESTONE_LABEL_CHAR_WIDTH = 6.1; // rough px/character at the label's 11px size -- just enough to keep same-row labels from overlapping, not real text measurement
+const MILESTONE_LABEL_MIN_GAP = 14; // minimum horizontal breathing room enforced between two labels sharing a row
 
 const SLOT_ROW_HEIGHT = 46; // vertical space allotted per slot bar
-const SLOT_AREA_TOP = AXIS_Y + 34; // where the first slot row begins
+const SLOT_AREA_GAP = 34; // gap between the axis and the first slot row
 const SLOT_BRACKET_HEIGHT = 18; // height of the "[ ... ]" bracket ends
 const SLOT_LABEL_GAP = 14; // gap between a slot bar and its label above it
 const BOTTOM_PADDING = 30;
@@ -101,16 +103,16 @@ function buildTickDates(start, end) {
 // Drawing functions -- each returns a fragment of SVG markup
 // ---------------------------------------------------------------------
 
-function drawAxis() {
-  return `<line x1="${MARGIN_X}" y1="${AXIS_Y}" x2="${WIDTH - MARGIN_X}" y2="${AXIS_Y}" class="axis" />`;
+function drawAxis(axisY) {
+  return `<line x1="${MARGIN_X}" y1="${axisY}" x2="${WIDTH - MARGIN_X}" y2="${axisY}" class="axis" />`;
 }
 
-function drawTicks(start, end) {
+function drawTicks(start, end, axisY) {
   return buildTickDates(start, end).map((iso) => {
     const x = xFor(iso, start, end);
     return `
-      <line x1="${x}" y1="${AXIS_Y - TICK_HALF_HEIGHT}" x2="${x}" y2="${AXIS_Y + TICK_HALF_HEIGHT}" class="tick" />
-      <text x="${x}" y="${AXIS_Y + TICK_LABEL_GAP}" class="tick-label" text-anchor="middle">${escapeXml(formatDate(iso))}</text>`;
+      <line x1="${x}" y1="${axisY - TICK_HALF_HEIGHT}" x2="${x}" y2="${axisY + TICK_HALF_HEIGHT}" class="tick" />
+      <text x="${x}" y="${axisY + TICK_LABEL_GAP}" class="tick-label" text-anchor="middle">${escapeXml(formatDate(iso))}</text>`;
   }).join('');
 }
 
@@ -127,18 +129,50 @@ function drawTodayLine(start, end, today, chartHeight) {
     </g>`;
 }
 
+/** Rough rendered width of a label, just precise enough to keep same-row labels from overlapping. */
+function estimateLabelWidth(text) {
+  return text.length * MILESTONE_LABEL_CHAR_WIDTH;
+}
+
+/** Left/right pixel extent of a label given its anchor point and text-anchor mode. */
+function labelExtent(x, width, anchor) {
+  if (anchor === 'start') return [x, x + width];
+  if (anchor === 'end') return [x - width, x];
+  return [x - width / 2, x + width / 2];
+}
+
+/**
+ * Greedily stacks milestone labels into rows so none overlap horizontally.
+ * Processes milestones left-to-right and places each into the lowest row
+ * (closest to the axis) whose last-placed label doesn't collide with it,
+ * opening a new row otherwise. This replaces a fixed even/odd alternation,
+ * which avoided overlap only by coincidence: a cluster of milestones close
+ * together in date (e.g. four deadlines within six weeks) would land in
+ * just two rows regardless of how wide their labels actually were.
+ */
+function assignMilestoneRows(milestones, start, end) {
+  const rowRightEdge = []; // rowRightEdge[i] = right edge of the last label placed in row i
+  return milestones.map((m) => {
+    const x = xFor(m.date, start, end);
+    const anchor = anchorFor(x);
+    const [left, right] = labelExtent(x, estimateLabelWidth(m.label), anchor);
+    let row = 0;
+    while (row < rowRightEdge.length && left - MILESTONE_LABEL_MIN_GAP < rowRightEdge[row]) row++;
+    rowRightEdge[row] = right;
+    return { ...m, x, anchor, row };
+  });
+}
+
 /** A single milestone: a diamond (deadline) or circle (event) on the axis, with a leader line up to its label. */
-function drawMilestone(milestone, start, end, index) {
-  const x = xFor(milestone.date, start, end);
-  const isFarRow = index % 2 === 0;
-  const labelY = AXIS_Y - (isFarRow ? MILESTONE_LABEL_FAR_OFFSET + Math.floor(index / 2) * MILESTONE_LABEL_STEP : MILESTONE_LABEL_NEAR_OFFSET);
+function drawMilestone(milestone, axisY) {
+  const { x, anchor, row } = milestone;
+  const labelY = axisY - (MILESTONE_LABEL_BASE_OFFSET + row * MILESTONE_LABEL_ROW_GAP);
   const status = milestone.computedStatus;
   const statusClass = `status-${status}`;
-  const anchor = anchorFor(x);
 
   const shape = milestone.type === 'event'
-    ? `<circle cx="${x}" cy="${AXIS_Y}" r="${MARKER_RADIUS}" class="marker ${statusClass}" />`
-    : `<rect x="${x - MARKER_RADIUS}" y="${AXIS_Y - MARKER_RADIUS}" width="${MARKER_RADIUS * 2}" height="${MARKER_RADIUS * 2}" transform="rotate(45 ${x} ${AXIS_Y})" class="marker ${statusClass}" />`;
+    ? `<circle cx="${x}" cy="${axisY}" r="${MARKER_RADIUS}" class="marker ${statusClass}" />`
+    : `<rect x="${x - MARKER_RADIUS}" y="${axisY - MARKER_RADIUS}" width="${MARKER_RADIUS * 2}" height="${MARKER_RADIUS * 2}" transform="rotate(45 ${x} ${axisY})" class="marker ${statusClass}" />`;
 
   const tooltip = [
     milestone.label,
@@ -149,7 +183,7 @@ function drawMilestone(milestone, start, end, index) {
 
   return `
     <g class="milestone" data-id="${escapeXml(milestone.id)}">
-      <line x1="${x}" y1="${AXIS_Y}" x2="${x}" y2="${labelY + 6}" class="leader" />
+      <line x1="${x}" y1="${axisY}" x2="${x}" y2="${labelY + 6}" class="leader" />
       ${shape}
       <text x="${x}" y="${labelY}" class="milestone-label ${statusClass}" text-anchor="${anchor}">${escapeXml(milestone.label)}</text>
       <text x="${x}" y="${labelY - MILESTONE_DATE_LABEL_GAP}" class="milestone-date" text-anchor="${anchor}">${escapeXml(formatDate(milestone.date))}</text>
@@ -164,10 +198,10 @@ function bracketPath(x1, x2, y, height) {
 }
 
 /** A single slot: a bracketed bar spanning [start, end] on its own row. */
-function drawSlot(slot, start, end, rowIndex) {
+function drawSlot(slot, start, end, rowIndex, slotAreaTop) {
   const x1 = xFor(slot.start, start, end);
   const x2 = xFor(slot.end, start, end);
-  const y = SLOT_AREA_TOP + rowIndex * SLOT_ROW_HEIGHT + SLOT_ROW_HEIGHT / 2 - 7;
+  const y = slotAreaTop + rowIndex * SLOT_ROW_HEIGHT + SLOT_ROW_HEIGHT / 2 - 7;
   const status = slot.computedStatus;
   const statusClass = `status-${status}`;
   const labelX = (x1 + x2) / 2;
@@ -203,26 +237,34 @@ export function renderTimelineSVG(paper, today = todayUTC()) {
   const { start, end } = paper.timeline;
   const { milestones, slots } = summarizePaper(paper, today);
 
-  // Chart grows to fit however many slot rows this paper has, so bars
-  // never have to overlap each other.
-  const height = SLOT_AREA_TOP + Math.max(1, slots.length) * SLOT_ROW_HEIGHT + BOTTOM_PADDING;
+  const sortedMilestones = milestones.slice().sort((a, b) => (a.date < b.date ? -1 : 1));
+  const placedMilestones = assignMilestoneRows(sortedMilestones, start, end);
 
-  const milestoneMarkup = milestones
-    .slice()
-    .sort((a, b) => (a.date < b.date ? -1 : 1))
-    .map((m, i) => drawMilestone(m, start, end, i))
-    .join('');
+  // The chart's top margin grows to fit however many label rows a cluster
+  // of nearby milestones needs, so labels never have to overlap each other.
+  const maxRow = placedMilestones.reduce((max, m) => Math.max(max, m.row), 0);
+  const axisY = Math.max(
+    AXIS_Y_MIN,
+    MILESTONE_LABEL_BASE_OFFSET + maxRow * MILESTONE_LABEL_ROW_GAP + MILESTONE_DATE_LABEL_GAP + MILESTONE_TOP_PADDING
+  );
+  const slotAreaTop = axisY + SLOT_AREA_GAP;
+
+  // Chart also grows to fit however many slot rows this paper has, so bars
+  // never have to overlap each other.
+  const height = slotAreaTop + Math.max(1, slots.length) * SLOT_ROW_HEIGHT + BOTTOM_PADDING;
+
+  const milestoneMarkup = placedMilestones.map((m) => drawMilestone(m, axisY)).join('');
 
   const slotMarkup = slots
     .slice()
     .sort((a, b) => (a.start < b.start ? -1 : 1))
-    .map((s, i) => drawSlot(s, start, end, i))
+    .map((s, i) => drawSlot(s, start, end, i, slotAreaTop))
     .join('');
 
   return `
 <svg viewBox="0 0 ${WIDTH} ${height}" class="timeline-svg" role="img" aria-label="Timeline for ${escapeXml(paper.title)}">
-  ${drawAxis()}
-  ${drawTicks(start, end)}
+  ${drawAxis(axisY)}
+  ${drawTicks(start, end, axisY)}
   ${slotMarkup}
   ${milestoneMarkup}
   ${drawTodayLine(start, end, today, height)}
