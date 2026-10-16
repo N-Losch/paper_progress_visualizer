@@ -1,8 +1,7 @@
 {
   "_comment": "List every paper JSON filename (without the .json extension) that should appear on the dashboard. The editor's 'Add to index' step updates this file for you; you can also edit it by hand.",
   "papers": [
-    "mie2027-full-paper",
-    "gmds2027-full-paper",
-    "example-paper"
+    "mie2027-bench-paper",
+    "mie2027-full-paper"
   ]
 }
