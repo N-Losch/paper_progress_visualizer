@@ -28,6 +28,8 @@
   --font-display: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  /* All text inside the classic SVG timeline (labels, dates, ticks, "today"). */
+  --font-chart: 'Inter Tight', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -148,7 +150,8 @@ a { color: var(--accent); }
   width: 100%;
   height: auto;
   margin-top: 14px;
-  font-family: var(--font-mono);
+  font-family: var(--font-chart);
+  font-variant-numeric: tabular-nums;
   text-rendering: optimizeLegibility;
 }
 
@@ -161,12 +164,12 @@ a { color: var(--accent); }
 
 .marker { stroke: var(--paper-card); stroke-width: 1.5; }
 .leader { stroke: var(--grid-line); stroke-width: 1; }
-.milestone-label { font-size: 11px; font-weight: 500; fill: var(--ink); font-family: var(--font-body); }
-.milestone-date { font-size: 9px; fill: var(--ink-soft); font-family: var(--font-mono); }
+.milestone-label { font-size: 11px; font-weight: 500; fill: var(--ink); font-family: var(--font-chart); }
+.milestone-date { font-size: 9px; fill: var(--ink-soft); font-family: var(--font-chart); }
 
 .bracket { fill: none; stroke-width: 1.75; }
 .bracket-fill { rx: 2; opacity: 0.9; }
-.slot-label { font-size: 11px; fill: var(--ink); font-family: var(--font-body); }
+.slot-label { font-size: 11px; fill: var(--ink); font-family: var(--font-chart); }
 
 .status-done, .marker.status-done { fill: var(--done); stroke: var(--done); }
 .status-active, .marker.status-active { fill: var(--active); stroke: var(--active); }
@@ -178,6 +181,9 @@ text.status-done { fill: var(--done); }
 text.status-active { fill: var(--active); }
 text.status-upcoming, text.status-pending { fill: var(--ink); }
 text.status-overdue { fill: var(--overdue); font-weight: 600; }
+/* The .status-* rules above also set a stroke (for markers); on text that
+   outline smears the letters, so labels only take the fill color. */
+text[class*="status-"] { stroke: none; }
 
 /* ---------------------------------------------------------------------
    Legend
@@ -433,3 +439,151 @@ footer.site-footer {
   font-family: var(--font-body);
 }
 footer.site-footer code { font-family: var(--font-mono); }
+
+/* ---------------------------------------------------------------------
+   Visualization style switcher
+   Every paper card holds one container per style; <body class="view-hig">
+   (set by dashboard.js from the "Style" dropdown / #view=hig) picks which one
+   is visible. Classic is the default, so without the class nothing changes.
+------------------------------------------------------------------------ */
+#paper-switcher { column-gap: 22px; }
+body:not(.view-hig) .paper-card > .view-hig { display: none; }
+body.view-hig .paper-card > .view-classic { display: none; }
+
+/* ---------------------------------------------------------------------
+   HIG view (js/timeline-render-hig.js)
+   Apple system colors from the Human Interface Guidelines, with a dark
+   variant that follows the reader's system setting. Only used while the
+   HIG style is selected, so the classic page keeps its light ink-on-paper
+   look regardless of dark mode.
+------------------------------------------------------------------------ */
+:root {
+  --font-hig-text: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif;
+  --font-hig-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+
+  --hig-bg: #F2F2F7;          /* systemGroupedBackground */
+  --hig-card: #FFFFFF;        /* secondarySystemGroupedBackground */
+  --hig-t1: #000000;          /* label */
+  --hig-t2: #8A8A8E;          /* secondaryLabel */
+  --hig-sep: #E5E5EA;         /* separator */
+  --hig-track: #F2F2F7;
+  --hig-ink: #1C1C1E;
+  --hig-inv: #FFFFFF;
+  --hig-done: #34C759;        /* systemGreen */
+  --hig-active: #0088FF;      /* systemBlue */
+  --hig-overdue: #FF383C;     /* systemRed */
+  --hig-upcoming: #C7C7CC;    /* systemGray3 */
+  --hig-upcoming-line: #AEAEB2;
+  --hig-cancelled: #E5E5EA;
+  --hig-cancelled-line: #C7C7CC;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --hig-bg: #000000;
+    --hig-card: #1C1C1E;
+    --hig-t1: #FFFFFF;
+    --hig-t2: #98989F;
+    --hig-sep: #38383A;
+    --hig-track: #2C2C2E;
+    --hig-ink: #F2F2F7;
+    --hig-inv: #000000;
+    --hig-done: #30D158;
+    --hig-active: #0091FF;
+    --hig-overdue: #FF4245;
+    --hig-upcoming: #636366;
+    --hig-upcoming-line: #7C7C80;
+    --hig-cancelled: #2C2C2E;
+    --hig-cancelled-line: #48484A;
+  }
+}
+
+/* Page chrome while the HIG style is active. html carries the graph-paper
+   background too, so it is swapped as well (no grid peeking out below). */
+html:has(> body.view-hig) { background: var(--hig-bg); }
+body.view-hig {
+  background: var(--hig-bg);
+  color: var(--hig-t1);
+  font-family: var(--font-hig-text);
+  min-height: 100vh;
+}
+body.view-hig #papers { margin-top: 28px; }
+body.view-hig .site-header { border-bottom: 1px solid var(--hig-sep); }
+body.view-hig .site-header h1 { font-family: var(--font-hig-display); color: var(--hig-t1); letter-spacing: -0.02em; }
+body.view-hig .site-header .today-tag {
+  font-family: var(--font-hig-text);
+  background: var(--hig-card);
+  border-color: transparent;
+  color: var(--hig-t2);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+body.view-hig .site-nav a { color: var(--hig-active); border-bottom: none; font-family: var(--font-hig-text); }
+body.view-hig .inline-label { color: var(--hig-t2); }
+body.view-hig select {
+  font-family: var(--font-hig-text);
+  background: var(--hig-card);
+  color: var(--hig-t1);
+  border-color: var(--hig-sep);
+}
+body.view-hig .legend { display: none; } /* each HIG chart carries its own legend */
+body.view-hig .paper-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin-bottom: 56px;
+}
+body.view-hig .paper-card h2 { font-family: var(--font-hig-display); color: var(--hig-t1); }
+body.view-hig .validation-box.quiet { background: var(--hig-card); border: none; border-radius: 18px; }
+body.view-hig .empty-note { color: var(--hig-t2); }
+body.view-hig footer.site-footer { color: var(--hig-t2); border-top: 1px solid var(--hig-sep); font-family: var(--font-hig-text); }
+
+/* The SVG itself. Below ~720px it stops shrinking (text would get too
+   small to read) and the card scrolls sideways instead. */
+.view-hig { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.hig-svg {
+  display: block;
+  width: 100%;
+  min-width: 720px;
+  height: auto;
+  font-family: var(--font-hig-text);
+  text-rendering: optimizeLegibility;
+}
+.hig-svg .hig-disp { font-family: var(--font-hig-display); letter-spacing: -0.02em; } /* keep in sync with DISPLAY_TRACKING */
+.hig-svg .hig-num { font-variant-numeric: tabular-nums; }
+.hig-svg .hig-caps { text-transform: uppercase; letter-spacing: 0.04em; }
+
+.hig-svg .hig-card { fill: var(--hig-card); }
+.hig-svg .hig-t1 { fill: var(--hig-t1); }
+.hig-svg .hig-t2 { fill: var(--hig-t2); }
+.hig-svg .hig-inv { fill: var(--hig-inv); }
+.hig-svg .hig-sep { stroke: var(--hig-sep); }
+.hig-svg .hig-track { fill: var(--hig-track); }
+.hig-svg .hig-ring { stroke: var(--hig-card); }
+
+.hig-svg .hig-fill-done { fill: var(--hig-done); }
+.hig-svg .hig-fill-active { fill: var(--hig-active); }
+.hig-svg .hig-fill-overdue { fill: var(--hig-overdue); }
+.hig-svg .hig-fill-upcoming { fill: var(--hig-upcoming); }
+.hig-svg .hig-fill-cancelled { fill: var(--hig-cancelled); }
+.hig-svg .hig-fill-ink { fill: var(--hig-ink); }
+
+.hig-svg .hig-line-active { fill: none; stroke: var(--hig-active); }
+.hig-svg .hig-line-overdue { fill: none; stroke: var(--hig-overdue); }
+.hig-svg .hig-line-upcoming { fill: none; stroke: var(--hig-upcoming-line); }
+.hig-svg .hig-line-cancelled { fill: none; stroke: var(--hig-cancelled-line); }
+.hig-svg .hig-line-ink { stroke: var(--hig-ink); }
+
+.hig-svg .hig-glyph-mark { fill: none; stroke: #FFFFFF; stroke-linecap: round; stroke-linejoin: round; }
+.hig-svg .hig-glyph-dot { fill: #FFFFFF; }
+.hig-svg .hig-tint { opacity: 0.25; }
+.hig-svg .hig-trail { opacity: 0.3; }
+
+.hig-svg .hig-hit { fill: transparent; }
+.hig-svg .hig-row:hover .hig-hit { fill: var(--hig-track); }
+
+.hig-svg .hig-pulse { animation: pulse 2.2s infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .hig-svg .hig-pulse { animation: none; }
+}

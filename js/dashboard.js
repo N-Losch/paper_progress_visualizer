@@ -1,7 +1,10 @@
 import { renderTimelineSVG } from './timeline-render.js';
+import { renderPaperHIG, canvasTextMeasurer } from './timeline-render-hig.js';
 import { summarizePaper, todayUTC, formatDate } from './timeline-model.js';
 import { validatePaper } from './schema-validate.js';
-import { parsePaperIdFromHash, buildHashForPaper, shouldShowCard } from './paper-switcher.js';
+import {
+  parsePaperIdFromHash, parseViewFromHash, buildHash, shouldShowCard, DEFAULT_VIEW,
+} from './paper-switcher.js';
 
 const STATUS_TEXT = {
   planning: 'Planning',
@@ -90,12 +93,25 @@ function renderEvents(events) {
 // Paper cards
 // ===========================================================================
 
-/** Full card for a paper that passed schema validation: header, SVG timeline, processes, and recent events. */
+/**
+ * Full card for a paper that passed schema validation. It holds one container
+ * per visualization style: the classic view (header, SVG timeline, processes,
+ * recent events) is built right away; the HIG view starts empty and is filled
+ * by showHigViews() the first time that style is selected.
+ */
 function renderPaperCard(paper) {
+  const card = el('article', { class: 'paper-card', 'data-paper-id': paper.id });
+  card.appendChild(renderClassicView(paper));
+  card.appendChild(el('div', { class: 'view-hig' }));
+  return card;
+}
+
+/** The original card content: header, SVG timeline, processes, and recent events. */
+function renderClassicView(paper) {
   const today = todayUTC();
   const { activeProcesses, events } = summarizePaper(paper, today);
 
-  const card = el('article', { class: 'paper-card', 'data-paper-id': paper.id });
+  const card = el('div', { class: 'view-classic' });
 
   const header = el('div', { class: 'paper-card-header' });
   const titleBlock = el('div');
@@ -145,16 +161,30 @@ function renderInvalidCard(filename, errors) {
 }
 
 // ===========================================================================
-// "Viewing: <paper>" switcher
+// "Viewing: <paper>" and "Style: <view>" switchers
 //
-// Filters the already-rendered cards by data-paper-id rather than
-// re-fetching/re-rendering, and mirrors the selection into the URL hash
-// (#paper=<id>) so a filtered view is bookmarkable/shareable even though
-// this is a static site with nowhere else to persist UI state. The actual
-// hash parsing/building and the show/hide decision are pure functions in
+// The paper switcher filters the already-rendered cards by data-paper-id
+// rather than re-fetching/re-rendering. The style switcher toggles a class on
+// <body> that shows one of the two containers inside every card (see
+// renderPaperCard). Both selections are mirrored into the URL hash
+// (#paper=<id>&view=<style>) so a filtered/restyled view is
+// bookmarkable/shareable even though this is a static site with nowhere else
+// to persist UI state. The classic style is the default and is never written
+// to the hash, so existing links keep working unchanged. The hash
+// parsing/building and the show/hide decision are pure functions in
 // paper-switcher.js so they have unit test coverage without needing a
 // browser test runner.
 // ===========================================================================
+
+/** Writes the current paper + style selection to the URL hash. */
+function syncHash() {
+  const hash = buildHash({
+    paper: document.getElementById('paper-select').value,
+    view: document.getElementById('view-select').value,
+  });
+  if (hash) location.hash = hash;
+  else history.replaceState(null, '', location.pathname + location.search);
+}
 
 /** @param {{ id: string, title: string, valid: boolean }[]} papers */
 function setupPaperSwitcher(papers) {
@@ -179,10 +209,8 @@ function setupPaperSwitcher(papers) {
   }
 
   select.addEventListener('change', () => {
-    const selectedId = select.value;
-    if (selectedId) location.hash = buildHashForPaper(selectedId);
-    else history.replaceState(null, '', location.pathname + location.search);
-    applyFilter(selectedId);
+    syncHash();
+    applyFilter(select.value);
   });
 
   // Preselect from the URL on load, if it names a paper that's actually present.
@@ -190,6 +218,44 @@ function setupPaperSwitcher(papers) {
   if (initialId && papers.some((p) => p.id === initialId)) {
     applyFilter(initialId);
   }
+}
+
+/**
+ * Fills the (still empty) HIG container of every valid card. Runs once per
+ * card, after web fonts are ready, because the HIG renderer measures text to
+ * truncate labels and place elements next to them.
+ * @param {Map<string, object>} papersById
+ */
+async function showHigViews(papersById) {
+  const pending = [...document.querySelectorAll('#papers .paper-card .view-hig:empty')];
+  if (!pending.length) return;
+  if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  const measure = canvasTextMeasurer(document);
+  const today = todayUTC();
+  for (const slot of pending) {
+    const paper = papersById.get(slot.parentElement.dataset.paperId);
+    if (paper) slot.innerHTML = renderPaperHIG(paper, today, { measure });
+  }
+}
+
+/** @param {Map<string, object>} papersById */
+function setupViewSwitcher(papersById) {
+  const select = document.getElementById('view-select');
+
+  function applyView(view) {
+    select.value = view;
+    document.body.classList.toggle('view-hig', view === 'hig');
+    if (view === 'hig') showHigViews(papersById);
+  }
+
+  select.addEventListener('change', () => {
+    syncHash();
+    applyView(select.value);
+  });
+
+  // The URL may ask for a style; anything else means the default (classic).
+  const initialView = parseViewFromHash(location.hash);
+  if (initialView !== DEFAULT_VIEW) applyView(initialView);
 }
 
 // ===========================================================================
@@ -227,6 +293,8 @@ async function main() {
   // Collected alongside the cards so the switcher's dropdown options can be
   // built once, after every file has been fetched and validated.
   const switcherEntries = [];
+  // Valid papers by id, so the HIG view can be rendered later, on demand.
+  const papersById = new Map();
 
   for (const name of filenames) {
     try {
@@ -242,6 +310,7 @@ async function main() {
       }
 
       container.appendChild(renderPaperCard(paper));
+      papersById.set(paper.id, paper);
       switcherEntries.push({ id: paper.id, title: paper.title, valid: true });
     } catch (err) {
       container.appendChild(renderInvalidCard(name, [err.message]));
@@ -250,6 +319,7 @@ async function main() {
   }
 
   setupPaperSwitcher(switcherEntries);
+  setupViewSwitcher(papersById);
 }
 
 main();

@@ -49,7 +49,19 @@ is the manifest that tells the dashboard which files to load.
 
 ## Visualization
 
-Rendering is a hand-built SVG (`js/timeline-render.js`).
+Rendering is a hand-built SVG. Two styles are available, picked with the
+"Style" dropdown on the dashboard:
+
+- **Classic** (default) — `js/timeline-render.js`: one axis, milestone
+  labels stacked above it, slots as bracketed bars below. Chart text is set
+  in Inter Tight.
+- **Apple (HIG)** — `js/timeline-render-hig.js`: follows Apple's Human
+  Interface Guidelines for charts — headline tiles and a one-sentence
+  summary first, then one row per phase/milestone, each with a status glyph
+  *and* a text label (never color alone), Apple system colors, and a dark
+  variant that follows the reader's system setting. Rendered on demand the
+  first time the style is selected. Same input and same status rules as the
+  classic view.
 
 Colors: green = done, amber = active, gray = upcoming/pending, red =
 overdue. Deadlines are only ever "done" if you say so explicitly — an
@@ -57,8 +69,10 @@ unmarked deadline whose date has passed turns red rather than silently
 disappearing.
 
 A "Viewing" dropdown above the paper list lets you switch between "All
-papers" and a single paper. The selection is stored in the URL as
-`#paper=<id>`, so a filtered view is bookmarkable and shareable, and
+papers" and a single paper. Both selections are stored in the URL as
+`#paper=<id>&view=hig` (either part optional; the classic style is never
+written, so older links still open in the classic view), so a filtered or
+restyled view is bookmarkable and shareable, and
 survives a page reload — reasonable for a static site with nowhere else
 to persist UI state. Its logic (hash parsing/building, the show/hide
 decision) lives in `js/paper-switcher.js` as plain functions with no DOM
