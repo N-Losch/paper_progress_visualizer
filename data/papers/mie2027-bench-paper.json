@@ -73,6 +73,14 @@
       "type": "event",
       "status": "done",
       "note": "Feedback included V2 send"
+    },
+    {
+      "id": "m10",
+      "label": "Submission",
+      "date": "2026-10-19",
+      "type": "event",
+      "status": "done",
+      "note": "V3 was uploaded"
     }
   ],
   "slots": [
