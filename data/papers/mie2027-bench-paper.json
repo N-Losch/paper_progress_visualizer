@@ -67,12 +67,13 @@
       "type": "event",
       "note": "Conference runs 26–30 April 2027 in Tallinn, Estonia."
     },
+
     {
-      "id": "m9",
-      "label": "Final submission deadline",
-      "date": "2026-11-03",
-      "type": "deadline",
-      "note": "The final deadline."
+      "id": "m8",
+      "label": "Submission deadline extended to Nov 3",
+      "date": "2026-10-20",
+      "type": "event",
+      "status": "done"
     }
   ],
   "slots": [
@@ -121,13 +122,6 @@
       "type": "event",
       "status": "done",
       "note": "V3 was uploaded"
-    },
-    {
-      "id": "e3",
-      "label": "Submission deadline extended to Nov 3",
-      "date": "2026-10-20",
-      "type": "event",
-      "status": "done"
     }
   ],
   "processes": [
