@@ -22,10 +22,11 @@
     },
     {
       "id": "m2",
-      "label": "Full paper submission deadline",
-      "date": "2026-10-20",
+      "label": "Extended submission deadline",
+      "date": "2026-11-03",
       "type": "deadline",
-      "note": "Full papers are limited to 5 pages."
+      "note": "Extended from 20.10.2026",
+      "status": "done"
     },
     {
       "id": "m3",
@@ -120,6 +121,13 @@
       "type": "event",
       "status": "done",
       "note": "V3 was uploaded"
+    },
+    {
+      "id": "e3",
+      "label": "Submission deadline extended to Nov 3",
+      "date": "2026-10-20",
+      "type": "event",
+      "status": "done"
     },
   ],
   "processes": [
