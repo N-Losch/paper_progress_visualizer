@@ -128,7 +128,7 @@
       "date": "2026-10-20",
       "type": "event",
       "status": "done"
-    },
+    }
   ],
   "processes": [
     {
@@ -139,7 +139,7 @@
       "note": "Full papers are original research contributions for publication in the indexed conference proceedings."
     },
     {
-      "id": "p1",
+      "id": "p2",
       "label": "Waiting on Reviewer",
       "active": true,
       "since": "2026-10-19",
