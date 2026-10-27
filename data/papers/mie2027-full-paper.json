@@ -65,7 +65,14 @@
       "date": "2027-04-26",
       "type": "event",
       "note": "Conference runs 26–30 April 2027 in Tallinn, Estonia."
-    }
+    },
+    {
+      "id": "m9",
+      "label": "Final submission deadline",
+      "date": "2026-11-03",
+      "type": "deadline",
+      "note": "The final deadline."
+    },
   ],
   "slots": [
     {
@@ -102,9 +109,8 @@
     {
       "id": "p1",
       "label": "Preparing full paper submission",
-      "active": true,
+      "active": false,
       "since": "2026-08-28",
       "note": "Full papers are original research contributions for publication in the indexed conference proceedings."
     }
-  ]
 }

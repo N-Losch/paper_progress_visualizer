@@ -68,20 +68,11 @@
     },
     {
       "id": "m9",
-      "label": "Coauthor-Feedback-1",
-      "date": "2026-10-16",
-      "type": "event",
-      "status": "done",
-      "note": "Feedback included V2 send"
+      "label": "Final submission deadline",
+      "date": "2026-11-03",
+      "type": "deadline",
+      "note": "The final deadline."
     },
-    {
-      "id": "m10",
-      "label": "Submission",
-      "date": "2026-10-19",
-      "type": "event",
-      "status": "done",
-      "note": "V3 was uploaded"
-    }
   ],
   "slots": [
     {
@@ -113,14 +104,38 @@
       "note": "Prepare the oral presentation. Full-paper presentations are scheduled for approximately 8 minutes plus 2 minutes for questions."
     }
   ],
-  "events": [],
+  "events": [
+    {
+      "id": "e1",
+      "label": "Coauthor-Feedback-1",
+      "date": "2026-10-16",
+      "type": "event",
+      "status": "done",
+      "note": "Feedback included V2 send"
+    },
+    {
+      "id": "e2",
+      "label": "Submission",
+      "date": "2026-10-19",
+      "type": "event",
+      "status": "done",
+      "note": "V3 was uploaded"
+    },
+  ],
   "processes": [
     {
       "id": "p1",
       "label": "Preparing full paper submission",
-      "active": true,
+      "active": false,
       "since": "2026-08-28",
       "note": "Full papers are original research contributions for publication in the indexed conference proceedings."
+    },
+    {
+      "id": "p1",
+      "label": "Waiting on Reviewer",
+      "active": true,
+      "since": "2026-10-19",
+      "note": ""
     }
   ]
 }
